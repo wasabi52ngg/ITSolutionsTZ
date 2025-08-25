@@ -66,7 +66,12 @@ python manage.py createsuperuser
 python manage.py load_sample_data
 ```
 
-5. **Запуск сервера разработки**
+5. **Сборка статических файлов**
+```bash
+python manage.py collectstatic
+```
+
+6. **Запуск сервера разработки**
 ```bash
 python manage.py runserver
 ```

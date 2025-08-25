@@ -3,3 +3,4 @@ db.sqlite3
 staticfiles/
 __pycache__/
 __pypackages__/
+.env
