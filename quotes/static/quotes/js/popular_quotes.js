@@ -1,7 +1,7 @@
 // JavaScript для страницы популярных цитат
 
 function likeQuote(quoteId, button) {
-    $.post(`/like/${quoteId}/`, {
+    $.post(`/quotes/like/${quoteId}/`, {
         'csrfmiddlewaretoken': getCsrfToken()
     })
     .done(function(data) {
@@ -26,7 +26,7 @@ function likeQuote(quoteId, button) {
 }
 
 function dislikeQuote(quoteId, button) {
-    $.post(`/dislike/${quoteId}/`, {
+    $.post(`/quotes/dislike/${quoteId}/`, {
         'csrfmiddlewaretoken': getCsrfToken()
     })
     .done(function(data) {

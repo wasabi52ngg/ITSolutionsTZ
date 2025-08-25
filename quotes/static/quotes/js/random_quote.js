@@ -1,7 +1,7 @@
 // JavaScript для страницы случайной цитаты
 
 function likeQuote(quoteId) {
-    $.post(`/like/${quoteId}/`, {
+    $.post(`/quotes/like/${quoteId}/`, {
         'csrfmiddlewaretoken': getCsrfToken()
     })
     .done(function(data) {
@@ -21,7 +21,7 @@ function likeQuote(quoteId) {
 }
 
 function dislikeQuote(quoteId) {
-    $.post(`/dislike/${quoteId}/`, {
+    $.post(`/quotes/dislike/${quoteId}/`, {
         'csrfmiddlewaretoken': getCsrfToken()
     })
     .done(function(data) {
