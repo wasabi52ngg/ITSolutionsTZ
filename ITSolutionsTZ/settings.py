@@ -31,6 +31,12 @@ DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
+CSRF_TRUSTED_ORIGINS = [
+    'http://91.237.249.248:8080',
+    'http://91.237.249.248',
+    'https://91.237.249.248',
+]
+
 
 # Application definition
 
