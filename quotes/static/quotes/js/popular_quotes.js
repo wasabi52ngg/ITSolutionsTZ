@@ -1,52 +1,58 @@
 // JavaScript для страницы популярных цитат
 
 function likeQuote(quoteId, button) {
-    $.post(`/quotes/like/${quoteId}/`, {
-        'csrfmiddlewaretoken': getCsrfToken()
-    })
-    .done(function(data) {
-        if (data.success) {
-            const card = button.closest('.quote-card');
-            const likesElement = card.querySelector('.fa-thumbs-up').parentElement.querySelector('.stat-number-small');
-            const dislikesElement = card.querySelector('.fa-thumbs-down').parentElement.querySelector('.stat-number-small');
-            
-            likesElement.textContent = data.likes_count;
-            dislikesElement.textContent = data.dislikes_count;
-            
-            showToast(data.message, 'success');
-            
-            location.reload();
-        } else {
-            showToast(data.message, 'warning');
+    $.ajax({
+        url: `/quotes/like/${quoteId}/`,
+        type: 'POST',
+        headers: {
+            'X-CSRFToken': getCsrfToken()
+        },
+        success: function(data) {
+            if (data.success) {
+                const card = button.closest('.quote-card');
+                const likesElement = card.querySelector('.fa-thumbs-up').parentElement.querySelector('.stat-number-small');
+                const dislikesElement = card.querySelector('.fa-thumbs-down').parentElement.querySelector('.stat-number-small');
+                
+                likesElement.textContent = data.likes_count;
+                dislikesElement.textContent = data.dislikes_count;
+                
+                showToast(data.message, 'success');
+                location.reload();
+            } else {
+                showToast(data.message, 'warning');
+            }
+        },
+        error: function() {
+            showToast('Ошибка при голосовании', 'error');
         }
-    })
-    .fail(function() {
-        showToast('Ошибка при голосовании', 'error');
     });
 }
 
 function dislikeQuote(quoteId, button) {
-    $.post(`/quotes/dislike/${quoteId}/`, {
-        'csrfmiddlewaretoken': getCsrfToken()
-    })
-    .done(function(data) {
-        if (data.success) {
-            const card = button.closest('.quote-card');
-            const likesElement = card.querySelector('.fa-thumbs-up').parentElement.querySelector('.stat-number-small');
-            const dislikesElement = card.querySelector('.fa-thumbs-down').parentElement.querySelector('.stat-number-small');
-            
-            likesElement.textContent = data.likes_count;
-            dislikesElement.textContent = data.dislikes_count;
-            
-            showToast(data.message, 'info');
-            
-            location.reload();
-        } else {
-            showToast(data.message, 'warning');
+    $.ajax({
+        url: `/quotes/dislike/${quoteId}/`,
+        type: 'POST',
+        headers: {
+            'X-CSRFToken': getCsrfToken()
+        },
+        success: function(data) {
+            if (data.success) {
+                const card = button.closest('.quote-card');
+                const likesElement = card.querySelector('.fa-thumbs-up').parentElement.querySelector('.stat-number-small');
+                const dislikesElement = card.querySelector('.fa-thumbs-down').parentElement.querySelector('.stat-number-small');
+                
+                likesElement.textContent = data.likes_count;
+                dislikesElement.textContent = data.dislikes_count;
+                
+                showToast(data.message, 'info');
+                location.reload();
+            } else {
+                showToast(data.message, 'warning');
+            }
+        },
+        error: function() {
+            showToast('Ошибка при голосовании', 'error');
         }
-    })
-    .fail(function() {
-        showToast('Ошибка при голосовании', 'error');
     });
 }
 

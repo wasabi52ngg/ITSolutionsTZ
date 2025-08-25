@@ -1,42 +1,48 @@
 // JavaScript для страницы случайной цитаты
 
 function likeQuote(quoteId) {
-    $.post(`/quotes/like/${quoteId}/`, {
-        'csrfmiddlewaretoken': getCsrfToken()
-    })
-    .done(function(data) {
-        if (data.success) {
-            $('#likes-count').text(data.likes_count);
-            $('#dislikes-count').text(data.dislikes_count);
-            showToast(data.message, 'success');
-            
-            location.reload();
-        } else {
-            showToast(data.message, 'warning');
+    $.ajax({
+        url: `/quotes/like/${quoteId}/`,
+        type: 'POST',
+        headers: {
+            'X-CSRFToken': getCsrfToken()
+        },
+        success: function(data) {
+            if (data.success) {
+                $('#likes-count').text(data.likes_count);
+                $('#dislikes-count').text(data.dislikes_count);
+                showToast(data.message, 'success');
+                location.reload();
+            } else {
+                showToast(data.message, 'warning');
+            }
+        },
+        error: function() {
+            showToast('Ошибка при голосовании', 'error');
         }
-    })
-    .fail(function() {
-        showToast('Ошибка при голосовании', 'error');
     });
 }
 
 function dislikeQuote(quoteId) {
-    $.post(`/quotes/dislike/${quoteId}/`, {
-        'csrfmiddlewaretoken': getCsrfToken()
-    })
-    .done(function(data) {
-        if (data.success) {
-            $('#likes-count').text(data.likes_count);
-            $('#dislikes-count').text(data.dislikes_count);
-            showToast(data.message, 'info');
-            
-            location.reload();
-        } else {
-            showToast(data.message, 'warning');
+    $.ajax({
+        url: `/quotes/dislike/${quoteId}/`,
+        type: 'POST',
+        headers: {
+            'X-CSRFToken': getCsrfToken()
+        },
+        success: function(data) {
+            if (data.success) {
+                $('#likes-count').text(data.likes_count);
+                $('#dislikes-count').text(data.dislikes_count);
+                showToast(data.message, 'info');
+                location.reload();
+            } else {
+                showToast(data.message, 'warning');
+            }
+        },
+        error: function() {
+            showToast('Ошибка при голосовании', 'error');
         }
-    })
-    .fail(function() {
-        showToast('Ошибка при голосовании', 'error');
     });
 }
 
