@@ -4,8 +4,8 @@ function likeQuote(quoteId) {
     $.ajax({
         url: `/quotes/like/${quoteId}/`,
         type: 'POST',
-        headers: {
-            'X-CSRFToken': getCsrfToken()
+        data: {
+            'csrfmiddlewaretoken': getCsrfToken()
         },
         success: function(data) {
             if (data.success) {
@@ -27,8 +27,8 @@ function dislikeQuote(quoteId) {
     $.ajax({
         url: `/quotes/dislike/${quoteId}/`,
         type: 'POST',
-        headers: {
-            'X-CSRFToken': getCsrfToken()
+        data: {
+            'csrfmiddlewaretoken': getCsrfToken()
         },
         success: function(data) {
             if (data.success) {
