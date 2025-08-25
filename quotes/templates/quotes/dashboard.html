@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+
+{% block title %}Статистика{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-3">
+                <i class="fas fa-chart-bar text-primary me-2"></i>Дашборд статистики
+            </h2>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card bg-primary text-white text-center">
+                <div class="card-body">
+                    <i class="fas fa-quote-left fa-2x mb-2"></i>
+                    <h4 class="mb-1">{{ total_quotes }}</h4>
+                    <p class="mb-0">Всего цитат</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-success text-white text-center">
+                <div class="card-body">
+                    <i class="fas fa-thumbs-up fa-2x mb-2"></i>
+                    <h4 class="mb-1">{{ total_likes }}</h4>
+                    <p class="mb-0">Всего лайков</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-info text-white text-center">
+                <div class="card-body">
+                    <i class="fas fa-eye fa-2x mb-2"></i>
+                    <h4 class="mb-1">{{ total_views }}</h4>
+                    <p class="mb-0">Всего просмотров</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-warning text-white text-center">
+                <div class="card-body">
+                    <i class="fas fa-thumbs-down fa-2x mb-2"></i>
+                    <h4 class="mb-1">{{ total_dislikes }}</h4>
+                    <p class="mb-0">Всего дизлайков</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-trophy me-2"></i>Топ цитаты по лайкам
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if top_liked_quotes %}
+                        {% for quote in top_liked_quotes %}
+                            <div class="d-flex align-items-start mb-3">
+                                <div class="flex-shrink-0">
+                                    <span class="badge bg-success rounded-pill">{{ forloop.counter }}</span>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <p class="mb-1 fw-bold">{{ quote.text|truncatechars:80 }}</p>
+                                    <small class="text-muted">
+                                        <i class="fas fa-thumbs-up text-success me-1"></i>{{ quote.likes_count }} лайков
+                                        {% if quote.author %} • {{ quote.author }}{% endif %}
+                                    </small>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted text-center">Пока нет цитат</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-eye me-2"></i>Топ цитаты по просмотрам
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if top_viewed_quotes %}
+                        {% for quote in top_viewed_quotes %}
+                            <div class="d-flex align-items-start mb-3">
+                                <div class="flex-shrink-0">
+                                    <span class="badge bg-info rounded-pill">{{ forloop.counter }}</span>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <p class="mb-1 fw-bold">{{ quote.text|truncatechars:80 }}</p>
+                                    <small class="text-muted">
+                                        <i class="fas fa-eye text-info me-1"></i>{{ quote.views_count }} просмотров
+                                        {% if quote.author %} • {{ quote.author }}{% endif %}
+                                    </small>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted text-center">Пока нет цитат</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8 mb-4">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-pie me-2"></i>Статистика по типам источников
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if source_stats %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Тип источника</th>
+                                        <th>Количество цитат</th>
+                                        <th>Просмотры</th>
+                                        <th>Лайки</th>
+                                        <th>Средний рейтинг</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for stat in source_stats %}
+                                        <tr>
+                                            <td>
+                                                {% if stat.type == 'movie' %}
+                                                    <i class="fas fa-film me-2"></i>Фильм
+                                                {% elif stat.type == 'book' %}
+                                                    <i class="fas fa-book me-2"></i>Книга
+                                                {% elif stat.type == 'series' %}
+                                                    <i class="fas fa-tv me-2"></i>Сериал
+                                                {% elif stat.type == 'other' %}
+                                                    <i class="fas fa-question me-2"></i>Другое
+                                                {% else %}
+                                                    <i class="fas fa-question me-2"></i>{{ stat.type }}
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-primary">{{ stat.quotes_count }}</span>
+                                            </td>
+                                            <td>{{ stat.total_views|default:0 }}</td>
+                                            <td>{{ stat.total_likes|default:0 }}</td>
+                                            <td>
+                                                {% if stat.total_views %}
+                                                    {% widthratio stat.total_likes stat.total_views 100 %}%
+                                                {% else %}
+                                                    0%
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center">Пока нет данных</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-clock me-2"></i>Недавние цитаты
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_quotes %}
+                        {% for quote in recent_quotes %}
+                            <div class="mb-3 pb-3 border-bottom">
+                                <p class="mb-1 small">{{ quote.text|truncatechars:60 }}</p>
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar me-1"></i>{{ quote.created_at|date:"d.m.Y" }}
+                                    {% if quote.author %} • {{ quote.author }}{% endif %}
+                                </small>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted text-center">Пока нет цитат</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="mb-3">Быстрые действия</h5>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="{% url 'quotes:add_quote' %}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Добавить цитату
+                        </a>
+                        <a href="{% url 'quotes:popular_quotes' %}" class="btn btn-success">
+                            <i class="fas fa-fire me-2"></i>Популярные цитаты
+                        </a>
+                        <a href="{% url 'quotes:random_quote' %}" class="btn btn-info">
+                            <i class="fas fa-random me-2"></i>Случайная цитата
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

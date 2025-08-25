@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Случайная цитата{% endblock %}
+
+{% block content %}
+<div class="container">
+    {% if no_quotes %}
+        <div class="row justify-content-center">
+            <div class="col-md-8 text-center">
+                <div class="card shadow-lg">
+                    <div class="card-body py-5">
+                        <i class="fas fa-quote-left fa-3x text-muted mb-4"></i>
+                        <h2 class="text-muted mb-3">Пока нет цитат</h2>
+                        <p class="text-muted mb-4">Будьте первым, кто добавит цитату!</p>
+                        <a href="{% url 'quotes:add_quote' %}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-plus me-2"></i>Добавить первую цитату
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-lg quote-card">
+                    <div class="card-body p-5">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-quote-left fa-2x text-primary mb-3"></i>
+                            <blockquote class="blockquote">
+                                <p class="display-6 fw-light text-dark mb-3">{{ quote.display_text }}</p>
+                                {% if quote.author %}
+                                    <footer class="blockquote-footer fs-5">
+                                        <cite title="Автор">{{ quote.author }}</cite>
+                                    </footer>
+                                {% endif %}
+                            </blockquote>
+                        </div>
+                        
+                        <div class="text-center mb-4">
+                            <span class="badge bg-secondary fs-6 px-3 py-2">
+                                <i class="fas fa-{{ quote.source.type|yesno:'film,book,play,question' }} me-2"></i>
+                                {{ quote.source.get_type_display }}: {{ quote.source.name }}
+                            </span>
+                        </div>
+                        
+                        <div class="row text-center mb-4">
+                            <div class="col-4">
+                                <div class="stat-item">
+                                    <i class="fas fa-eye text-info"></i>
+                                    <div class="stat-number">{{ quote.views_count }}</div>
+                                    <div class="stat-label">Просмотров</div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="stat-item">
+                                    <i class="fas fa-thumbs-up text-success"></i>
+                                    <div class="stat-number" id="likes-count">{{ quote.likes_count }}</div>
+                                    <div class="stat-label">Лайков</div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="stat-item">
+                                    <i class="fas fa-thumbs-down text-danger"></i>
+                                    <div class="stat-number" id="dislikes-count">{{ quote.dislikes_count }}</div>
+                                    <div class="stat-label">Дизлайков</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mb-4">
+                            {% if user_vote and user_vote.vote_type == 'like' %}
+                                <button class="btn btn-success btn-lg me-3" disabled>
+                                    <i class="fas fa-thumbs-up me-2"></i>Вы уже лайкнули
+                                </button>
+                            {% else %}
+                                <button class="btn btn-outline-success btn-lg me-3" onclick="likeQuote({{ quote.id }})">
+                                    <i class="fas fa-thumbs-up me-2"></i>Нравится
+                                </button>
+                            {% endif %}
+                            
+                            {% if user_vote and user_vote.vote_type == 'dislike' %}
+                                <button class="btn btn-danger btn-lg me-3" disabled>
+                                    <i class="fas fa-thumbs-down me-2"></i>Вы уже дизлайкнули
+                                </button>
+                            {% else %}
+                                <button class="btn btn-outline-danger btn-lg me-3" onclick="dislikeQuote({{ quote.id }})">
+                                    <i class="fas fa-thumbs-down me-2"></i>Не нравится
+                                </button>
+                            {% endif %}
+                            
+                            <a href="{% url 'quotes:random_quote' %}" class="btn btn-primary btn-lg">
+                                <i class="fas fa-random me-2"></i>Другая цитата
+                            </a>
+                        </div>
+                        
+                        <div class="text-center">
+                            <small class="text-muted">
+                                <i class="fas fa-weight-hanging me-1"></i>
+                                Вес цитаты: {{ quote.weight }}/10
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <a href="{% url 'quotes:add_quote' %}" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-plus me-2"></i>Добавить свою цитату
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="{% url 'quotes:popular_quotes' %}" class="btn btn-outline-warning w-100">
+                            <i class="fas fa-fire me-2"></i>Популярные цитаты
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'quotes/js/random_quote.js' %}"></script>
+{% endblock %}

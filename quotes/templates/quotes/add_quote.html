@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Добавить цитату{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-plus me-2"></i>Добавить новую цитату
+                    </h3>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label for="{{ form.text.id_for_label }}" class="form-label fw-bold">
+                                {{ form.text.label }}
+                            </label>
+                            {{ form.text }}
+                            {% if form.text.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.text.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            {% if form.text.help_text %}
+                                <div class="form-text">{{ form.text.help_text }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="{{ form.author.id_for_label }}" class="form-label fw-bold">
+                                {{ form.author.label }}
+                            </label>
+                            {{ form.author }}
+                            {% if form.author.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.author.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="{{ form.source_name.id_for_label }}" class="form-label fw-bold">
+                                {{ form.source_name.label }}
+                            </label>
+                            {{ form.source_name }}
+                            {% if form.source_name.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.source_name.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            {% if form.source_name.help_text %}
+                                <div class="form-text">{{ form.source_name.help_text }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="{{ form.source_type.id_for_label }}" class="form-label fw-bold">
+                                {{ form.source_type.label }}
+                            </label>
+                            {{ form.source_type }}
+                            {% if form.source_type.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.source_type.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="{{ form.weight.id_for_label }}" class="form-label fw-bold">
+                                {{ form.weight.label }}
+                            </label>
+                            <div class="weight-slider-container">
+                                <input type="range" 
+                                       class="form-range" 
+                                       id="{{ form.weight.id_for_label }}"
+                                       name="{{ form.weight.name }}"
+                                       min="1" 
+                                       max="10" 
+                                       value="{{ form.weight.value|default:5 }}"
+                                       oninput="updateWeightValue(this.value)">
+                                <div class="d-flex justify-content-between mt-2">
+                                    <small class="text-muted">1 - Меньше шансов показа</small>
+                                    <span class="badge bg-primary" id="weight-value">5</span>
+                                    <small class="text-muted">10 - Больше шансов показа</small>
+                                </div>
+                            </div>
+                            {% if form.weight.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.weight.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            {% if form.weight.help_text %}
+                                <div class="form-text">{{ form.weight.help_text }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'quotes:random_quote' %}" class="btn btn-outline-secondary me-md-2">
+                                <i class="fas fa-arrow-left me-2"></i>Отмена
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Добавить цитату
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Правила добавления цитат
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Дубликаты цитат не допускаются
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            У одного источника не более 3 цитат
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Вес цитаты влияет на частоту показа
+                        </li>
+                        <li class="mb-0">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Все цитаты проходят модерацию
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'quotes/js/add_quote.js' %}"></script>
+{% endblock %}

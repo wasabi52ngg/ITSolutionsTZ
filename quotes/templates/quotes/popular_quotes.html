@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load quote_extras %}
+
+{% block title %}Популярные цитаты{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="mb-3">
+                <i class="fas fa-fire text-warning me-2"></i>Популярные цитаты
+            </h2>
+        </div>
+        <div class="col-md-4">
+            <div class="stats-cards">
+                <div class="row g-2">
+                    <div class="col-6">
+                        <div class="card bg-primary text-white text-center">
+                            <div class="card-body py-2">
+                                <small>Всего цитат</small>
+                                <div class="fw-bold">{{ total_quotes }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="card bg-success text-white text-center">
+                            <div class="card-body py-2">
+                                <small>Всего лайков</small>
+                                <div class="fw-bold">{{ total_likes }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Поиск</label>
+                    <input type="text" 
+                           class="form-control" 
+                           name="search" 
+                           value="{{ current_search }}" 
+                           placeholder="Поиск по тексту, автору или источнику...">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Тип источника</label>
+                    <select class="form-select" name="type">
+                        <option value="">Все типы</option>
+                        <option value="movie" {% if current_type == 'movie' %}selected{% endif %}>Фильм</option>
+                        <option value="book" {% if current_type == 'book' %}selected{% endif %}>Книга</option>
+                        <option value="series" {% if current_type == 'series' %}selected{% endif %}>Сериал</option>
+                        <option value="other" {% if current_type == 'other' %}selected{% endif %}>Другое</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Сортировка</label>
+                    <select class="form-select" name="sort">
+                        <option value="likes" {% if current_sort == 'likes' %}selected{% endif %}>По лайкам</option>
+                        <option value="views" {% if current_sort == 'views' %}selected{% endif %}>По просмотрам</option>
+                        <option value="popularity" {% if current_sort == 'popularity' %}selected{% endif %}>По популярности</option>
+                        <option value="recent" {% if current_sort == 'recent' %}selected{% endif %}>По дате</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search me-1"></i>Найти
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    {% if page_obj %}
+        <div class="row">
+            {% for quote in page_obj %}
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 quote-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <span class="badge bg-secondary">
+                                    <i class="fas fa-{{ quote.source.type|yesno:'film,book,play,question' }} me-1"></i>
+                                    {{ quote.source.get_type_display }}
+                                </span>
+                                <small class="text-muted">
+                                    <i class="fas fa-weight-hanging me-1"></i>{{ quote.weight }}/10
+                                </small>
+                            </div>
+                            
+                            <blockquote class="blockquote mb-3">
+                                <p class="mb-2">{{ quote.display_text }}</p>
+                                {% if quote.author %}
+                                    <footer class="blockquote-footer">
+                                        <cite>{{ quote.author }}</cite>
+                                    </footer>
+                                {% endif %}
+                            </blockquote>
+                            
+                            <div class="text-muted mb-3">
+                                <small>
+                                    <i class="fas fa-film me-1"></i>{{ quote.source.name }}
+                                </small>
+                            </div>
+                            
+                            <div class="row text-center mb-3">
+                                <div class="col-4">
+                                    <div class="stat-item-small">
+                                        <i class="fas fa-eye text-info"></i>
+                                        <div class="stat-number-small">{{ quote.views_count }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="stat-item-small">
+                                        <i class="fas fa-thumbs-up text-success"></i>
+                                        <div class="stat-number-small">{{ quote.likes_count }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="stat-item-small">
+                                        <i class="fas fa-thumbs-down text-danger"></i>
+                                        <div class="stat-number-small">{{ quote.dislikes_count }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex gap-2">
+                                {% if user_votes|get_item:quote.id == 'like' %}
+                                    <button class="btn btn-success btn-sm flex-fill" disabled>
+                                        <i class="fas fa-thumbs-up me-1"></i>Лайкнуто
+                                    </button>
+                                {% else %}
+                                    <button class="btn btn-outline-success btn-sm flex-fill" onclick="likeQuote({{ quote.id }}, this)">
+                                        <i class="fas fa-thumbs-up me-1"></i>Лайк
+                                    </button>
+                                {% endif %}
+                                
+                                {% if user_votes|get_item:quote.id == 'dislike' %}
+                                    <button class="btn btn-danger btn-sm flex-fill" disabled>
+                                        <i class="fas fa-thumbs-down me-1"></i>Дизлайкнуто
+                                    </button>
+                                {% else %}
+                                    <button class="btn btn-outline-danger btn-sm flex-fill" onclick="dislikeQuote({{ quote.id }}, this)">
+                                        <i class="fas fa-thumbs-down me-1"></i>Дизлайк
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        {% if page_obj.has_other_pages %}
+            <nav aria-label="Навигация по страницам">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{% if sort_by %}&sort={{ sort_by }}{% endif %}{% if source_type %}&type={{ source_type }}{% endif %}{% if search %}&search={{ search }}{% endif %}">
+                                <i class="fas fa-angle-double-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if sort_by %}&sort={{ sort_by }}{% endif %}{% if source_type %}&type={{ source_type }}{% endif %}{% if search %}&search={{ search }}{% endif %}">
+                                <i class="fas fa-angle-left"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if sort_by %}&sort={{ sort_by }}{% endif %}{% if source_type %}&type={{ source_type }}{% endif %}{% if search %}&search={{ search }}{% endif %}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if sort_by %}&sort={{ sort_by }}{% endif %}{% if source_type %}&type={{ source_type }}{% endif %}{% if search %}&search={{ search }}{% endif %}">
+                                <i class="fas fa-angle-right"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if sort_by %}&sort={{ sort_by }}{% endif %}{% if source_type %}&type={{ source_type }}{% endif %}{% if search %}&search={{ search }}{% endif %}">
+                                <i class="fas fa-angle-double-right"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-search fa-3x text-muted mb-3"></i>
+            <h4 class="text-muted">Цитаты не найдены</h4>
+            <p class="text-muted">Попробуйте изменить параметры поиска</p>
+        </div>
+    {% endif %}
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'quotes/js/popular_quotes.js' %}"></script>
+{% endblock %}
