@@ -5,6 +5,9 @@
 
 {% block content %}
 <div class="container">
+    <form id="csrf-form" style="display: none;">
+        {% csrf_token %}
+    </form>
     {% if no_quotes %}
         <div class="row justify-content-center">
             <div class="col-md-8 text-center">

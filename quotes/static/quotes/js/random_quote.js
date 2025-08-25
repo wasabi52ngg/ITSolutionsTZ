@@ -47,10 +47,10 @@ function dislikeQuote(quoteId) {
 }
 
 function getCsrfToken() {
-    let token = $('meta[name="csrf-token"]').attr('content');
+    let token = $('#csrf-form [name=csrfmiddlewaretoken]').val();
     
     if (!token) {
-        token = $('[name=csrfmiddlewaretoken]').val();
+        token = $('meta[name="csrf-token"]').attr('content');
     }
     
     if (!token) {
